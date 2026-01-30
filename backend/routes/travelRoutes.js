@@ -1,31 +1,21 @@
 const express = require("express");
 const router = express.Router();
+const db = require("../config/db");
 
-// Dummy travel data
-const travelData = [
-  {
-    id: 1,
-    name: "Manali",
-    description: "Snow mountains and adventure sports",
-    image: "https://via.placeholder.com/250"
-  },
-  {
-    id: 2,
-    name: "Goa",
-    description: "Beaches, nightlife, and relaxation",
-    image: "https://via.placeholder.com/250"
-  }
-];
-
-// GET all trips
+// GET all travel data
 router.get("/", (req, res) => {
-  res.json(travelData);
+  db.query("SELECT * FROM travel", (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.json(results);
+  });
 });
 
-// GET single trip by ID
+// GET single travel by ID
 router.get("/:id", (req, res) => {
-  const trip = travelData.find(t => t.id == req.params.id);
-  res.json(trip);
+  db.query("SELECT * FROM travel WHERE id=?", [req.params.id], (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.json(results[0]);
+  });
 });
 
 module.exports = router;
