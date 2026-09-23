@@ -67,7 +67,7 @@ Before cloning the project, fork the repository to your own GitHub account.
 
 Open the project repository:
 
-https://github.com/DevOpsCloudZone/Projec
+https://github.com/DevOpsCloudZone/Project
 
 ---
 ## 1.Application Components
@@ -75,7 +75,7 @@ Component	Technology	Port
 Frontend	React + Vite	5173
 Backend	Flask + SQLAlchemy	5000
 Database	PostgreSQL	5432
-1.2 Request Flow
+### 1.2 Request Flow
 
 The frontend sends API requests using /api.
 
@@ -101,37 +101,37 @@ The Vite development server proxies /api requests to the Flask backend.
 
 Before setting up the project, make sure the following software is installed.
 
-# 2.1 Required Software
+### 2.1 Required Software
 Git
 Python 3
 Node.js 22+
 npm
 PostgreSQL 15+
-# 2.2 Recommended Versions
+### 2.2 Recommended Versions
 Python 3.9+
 Node.js 22+
 PostgreSQL 15+
-# 2.3 Verify Git
+### 2.3 Verify Git
 
 Run:
 
 git --version
-# 2.4 Verify Python
+### 2.4 Verify Python
 
 Run:
 
 python3 --version
-# 2.5 Verify Node.js
+### 2.5 Verify Node.js
 
 Run:
 
 node --version
-# 2.6 Verify npm
+### 2.6 Verify npm
 
 Run:
 
 npm --version
-# 2.7 Verify PostgreSQL
+### 2.7 Verify PostgreSQL
 
 Run:
 
