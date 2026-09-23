@@ -62,7 +62,7 @@ Recommended versions:
 - PostgreSQL 15+
 
 ---
-1-##. Clone the Repository
+##  1.Clone the Repository
 
 Clone the repository:
 
@@ -87,7 +87,7 @@ Project/
 ├── backend/
 ├── db/
 └── frontend/
-2. PostgreSQL Database Setup
+## 2.PostgreSQL Database Setup
 
 Make sure PostgreSQL is running.
 
@@ -133,7 +133,7 @@ Exit the postgres operating-system user:
 
 exit
 
-3. Configure PostgreSQL Authentication
+## 3.Configure PostgreSQL Authentication
 
 The application connects to PostgreSQL through localhost.
 
