@@ -1,0 +1,371 @@
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* =========================
+   HOME PAGE
+   ========================= */
+
+.app-container {
+  min-height: calc(100vh - 80px);
+  padding: 70px 40px;
+  text-align: center;
+}
+
+.app-title {
+  font-size: 52px;
+  margin: 20px 0 15px;
+  font-weight: 700;
+}
+
+.app-subtitle {
+  font-size: 22px;
+  margin-bottom: 55px;
+}
+
+/* Home buttons */
+
+.home-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 35px;
+  margin-top: 30px;
+}
+
+.home-button {
+  width: 350px;
+  height: 175px;
+
+  border: none;
+  border-radius: 16px;
+
+  background: #f4f4f4;
+  color: #111318;
+
+  font-size: 32px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.home-button:hover {
+  transform: translateY(-6px);
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+
+/* =========================
+   COMMON PAGE
+   ========================= */
+
+.page-container {
+  max-width: 1200px;
+
+  margin: 0 auto;
+
+  padding: 60px 40px;
+}
+
+.page-title {
+  text-align: center;
+
+  font-size: 48px;
+
+  margin: 20px 0 12px;
+
+  font-weight: 700;
+}
+
+.page-subtitle {
+  text-align: center;
+
+  font-size: 20px;
+
+  margin-bottom: 50px;
+}
+
+
+/* =========================
+   MOVIE CARDS
+   ========================= */
+
+.card-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 30px;
+}
+
+.card {
+  background: #f4f4f4;
+
+  color: #111318;
+
+  border-radius: 16px;
+
+  padding: 30px;
+
+  min-height: 230px;
+
+  text-align: left;
+
+  border: none;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.card h2 {
+  margin-top: 0;
+
+  font-size: 28px;
+
+  margin-bottom: 20px;
+}
+
+.card p {
+  font-size: 17px;
+
+  line-height: 1.6;
+}
+
+.card strong {
+  font-weight: 700;
+}
+
+
+/* =========================
+   TECH CATEGORY CARDS
+   ========================= */
+
+.category-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 30px;
+
+  margin-top: 20px;
+}
+
+.category-button {
+  min-height: 170px;
+
+  border: none;
+
+  border-radius: 16px;
+
+  background: #f4f4f4;
+
+  color: #111318;
+
+  font-size: 28px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.category-button:hover {
+  transform: translateY(-6px);
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+
+/* =========================
+   TECH NEWS SECTION
+   ========================= */
+
+.news-section {
+  margin-top: 60px;
+}
+
+.news-section h2 {
+  text-align: center;
+
+  font-size: 32px;
+
+  margin-bottom: 30px;
+}
+
+.news-card {
+  background: #f4f4f4;
+
+  color: #111318;
+
+  padding: 28px;
+
+  margin-bottom: 25px;
+
+  border-radius: 16px;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.news-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.news-card h3 {
+  margin-top: 0;
+
+  font-size: 24px;
+}
+
+.news-card p {
+  font-size: 17px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================
+   HEADER
+   ========================= */
+
+.header {
+  width: 100%;
+
+  border-bottom: 1px solid #444;
+
+  padding: 22px 0;
+}
+
+.header-content {
+  max-width: 1200px;
+
+  margin: 0 auto;
+
+  padding: 0 40px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+}
+
+.logo {
+  font-size: 25px;
+
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+.header nav {
+  display: flex;
+
+  gap: 30px;
+}
+
+.header nav a {
+  text-decoration: none;
+
+  font-size: 17px;
+
+  font-weight: 500;
+}
+
+.header nav a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 800px) {
+
+  .app-title {
+    font-size: 42px;
+  }
+
+  .app-subtitle {
+    font-size: 18px;
+  }
+
+  .home-buttons {
+    flex-direction: column;
+
+    align-items: center;
+  }
+
+  .home-button {
+    width: 100%;
+
+    max-width: 400px;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-content {
+    flex-direction: column;
+
+    gap: 20px;
+  }
+
+  .header nav {
+    gap: 20px;
+  }
+}
+
+
+@media (max-width: 500px) {
+
+  .app-container {
+    padding: 50px 20px;
+  }
+
+  .page-container {
+    padding: 40px 20px;
+  }
+
+  .app-title {
+    font-size: 36px;
+  }
+
+  .page-title {
+    font-size: 36px;
+  }
+
+  .home-button {
+    height: 140px;
+
+    font-size: 25px;
+  }
+}
