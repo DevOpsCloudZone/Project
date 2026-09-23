@@ -62,7 +62,7 @@ Recommended versions:
 - PostgreSQL 15+
 
 ---
-1. Clone the Repository
+1-##. Clone the Repository
 
 Clone the repository:
 
