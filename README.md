@@ -61,18 +61,93 @@ Recommended versions:
 - Node.js 22+
 - PostgreSQL 15+
 
----
-##  1.Clone the Repository
+## Fork the Repository
 
-Clone the repository:
+Before cloning the project, fork the repository to your own GitHub account.
+
+Open the project repository:
+
+https://github.com/DevOpsCloudZone/Projec
+
+---
+## 1.Application Components
+Component	Technology	Port
+Frontend	React + Vite	5173
+Backend	Flask + SQLAlchemy	5000
+Database	PostgreSQL	5432
+1.2 Request Flow
+
+The frontend sends API requests using /api.
+
+For example:
+
+Browser
+   |
+   | http://EC2-IP:5173/api/movies
+   v
+Vite Development Server
+   |
+   | http://127.0.0.1:5000/api/movies
+   v
+Flask Backend
+   |
+   | SQLAlchemy
+   v
+PostgreSQL
+
+The Vite development server proxies /api requests to the Flask backend.
+
+## 2. Prerequisites
+
+Before setting up the project, make sure the following software is installed.
+
+# 2.1 Required Software
+Git
+Python 3
+Node.js 22+
+npm
+PostgreSQL 15+
+# 2.2 Recommended Versions
+Python 3.9+
+Node.js 22+
+PostgreSQL 15+
+# 2.3 Verify Git
+
+Run:
+
+git --version
+# 2.4 Verify Python
+
+Run:
+
+python3 --version
+# 2.5 Verify Node.js
+
+Run:
+
+node --version
+# 2.6 Verify npm
+
+Run:
+
+npm --version
+# 2.7 Verify PostgreSQL
+
+Run:
+
+psql --version
+
+## 3. Clone the Repository
+
+Clone the repository from GitHub:
 
 git clone https://github.com/DevOpsCloudZone/Project.git
 
-Go into the project:
+Move into the project directory:
 
 cd Project
 
-Check the project:
+Verify the project files:
 
 ls -la
 
@@ -87,214 +162,278 @@ Project/
 ├── backend/
 ├── db/
 └── frontend/
-## 2.PostgreSQL Database Setup
 
-Make sure PostgreSQL is running.
+Note: Linux is case-sensitive. The directory is Project, not project.
 
-For systems using systemd:
+4. PostgreSQL Database Setup
+
+The application uses PostgreSQL as its database.
+
+The following database configuration is used by the application:
+
+Database Name : media_platform
+Database User : media_user
+Database Port : 5432
+
+The database password should be chosen by the person setting up the application.
+
+4.1 Start PostgreSQL
+
+Start the PostgreSQL service:
 
 sudo systemctl start postgresql
 
-Check the status:
+Check the PostgreSQL service:
 
 sudo systemctl status postgresql
 
-2.1 Create the Database User
+PostgreSQL should show:
 
-Switch to the PostgreSQL administrative user:
+active (running)
+4.2 Switch to the PostgreSQL Administrative User
+
+PostgreSQL provides a system user called postgres.
+
+Switch to that user:
 
 sudo -iu postgres
 
-Open PostgreSQL:
+You should now be operating as the PostgreSQL administrative user.
+
+4.3 Open the PostgreSQL Shell
+
+Start the PostgreSQL command-line interface:
 
 psql
 
-Create the application user:
+You should see a PostgreSQL prompt similar to:
+
+postgres=#
+4.4 Create the Application User
+
+Create a PostgreSQL user for the Media Platform application.
+
+Replace YOUR_DATABASE_PASSWORD with the password you want to use.
 
 CREATE USER media_user WITH PASSWORD 'YOUR_DATABASE_PASSWORD';
+
+For example:
+
+CREATE USER media_user WITH PASSWORD 'MyStrongPassword';
+
+Important: Do not use an actual password in documentation or commit it to GitHub.
+
+4.5 Create the Application Database
 
 Create the database:
 
 CREATE DATABASE media_platform;
+4.6 Grant Database Privileges
 
-Grant database privileges:
+Grant the application user privileges on the database:
 
 GRANT ALL PRIVILEGES ON DATABASE media_platform TO media_user;
+4.7 Make the Application User the Database Owner
 
-Make the application user the database owner:
+Make media_user the owner of the application database:
 
 ALTER DATABASE media_platform OWNER TO media_user;
+4.8 Exit PostgreSQL
 
-Exit PostgreSQL:
+Exit the PostgreSQL shell:
 
 \q
 
-Exit the postgres operating-system user:
+You will return to the postgres operating-system user.
+
+4.9 Exit the PostgreSQL Operating-System User
+
+Run:
 
 exit
 
-## 3.Configure PostgreSQL Authentication
+You should return to your normal Linux user.
 
-The application connects to PostgreSQL through localhost.
+5. Configure PostgreSQL Authentication
 
-The PostgreSQL authentication configuration should allow local password authentication.
+The application connects to PostgreSQL through localhost using a username and password.
 
-Check:
+Open the PostgreSQL authentication configuration:
 
 sudo vim /var/lib/pgsql/data/pg_hba.conf
 
-The local host entries should use:
+Make sure the following entries are present:
 
 host    all    all    127.0.0.1/32    scram-sha-256
 host    all    all    ::1/128         scram-sha-256
 
-Restart PostgreSQL after making changes:
+These entries allow local TCP connections to PostgreSQL using password authentication.
+
+Save the file and restart PostgreSQL:
 
 sudo systemctl restart postgresql
-4. Configure Database Schema Permissions
 
-Switch to the PostgreSQL administrator:
+Verify PostgreSQL is running:
 
+sudo systemctl status postgresql
+6. Configure PostgreSQL Schema Permissions
+
+The application user needs permission to work with the public schema.
+
+6.1 Switch to the PostgreSQL Administrative User
 sudo -iu postgres
-
-Open PostgreSQL:
-
+6.2 Open PostgreSQL
 psql
+6.3 Connect to the Application Database
 
-Connect to the application database:
+Run:
 
 \c media_platform
 
-Grant schema permissions:
+You should see a message indicating that you are connected to media_platform.
+
+6.4 Grant Schema Permissions
+
+Run:
 
 GRANT USAGE, CREATE ON SCHEMA public TO media_user;
+6.5 Make the Application User the Schema Owner
 
-Make the application user the owner of the public schema:
+Run:
 
 ALTER SCHEMA public OWNER TO media_user;
-
-Exit:
-
+6.6 Exit PostgreSQL
 \q
-
-Then:
-
+6.7 Exit the PostgreSQL Administrative User
 exit
-
-
-
-5. Initialize the Database
+7. Initialize the Database
 
 The database initialization script is located at:
 
 db/init.sql
 
-Run it using the application database user:
+The script creates the application tables and inserts sample data.
 
+7.1 Navigate to the Project Directory
 cd ~/Project
-psql -h 127.0.0.1 -U media_user -W -d media_platform
+7.2 Run the Database Initialization Script
 
-Enter the database password when prompted.
-
-Then execute:
-
-\i db/init.sql
-
-Alternatively, from the Linux shell:
+Run:
 
 psql -h 127.0.0.1 -U media_user -W -d media_platform -f db/init.sql
-6. Database Tables
 
-The current database contains:
+When prompted, enter the password configured for media_user.
+
+The script creates the following tables:
 
 movies
 tech_categories
 tech_news
-Movies
+8. Verify the Database
 
-The movies table contains:
+Connect to the database:
 
-id
-title
-description
-rating
-release_year
-Technology Categories
+psql -h 127.0.0.1 -U media_user -W -d media_platform
+8.1 List Tables
 
-The tech_categories table contains:
+Run:
 
-id
-name
+\dt
 
-Current categories:
+You should see:
 
-Mobiles
-Cars
-Laptops
-AI
-Technology News
+movies
+tech_categories
+tech_news
+8.2 Check Movies
 
-The tech_news table contains:
+Run:
 
-id
-title
-description
-category_id
+SELECT * FROM movies;
+8.3 Check Technology Categories
 
-The category_id connects technology news to a technology category.
+Run:
 
-7. Backend Setup
+SELECT * FROM tech_categories;
+8.4 Check Technology News
 
-Move into the backend directory:
+Run:
 
+SELECT * FROM tech_news;
+8.5 Exit PostgreSQL
+\q
+9. Backend Setup
+
+The backend is built using:
+
+Python
+Flask
+Flask-SQLAlchemy
+PostgreSQL
+psycopg2
+
+The backend source code is located in:
+
+backend/
+9.1 Navigate to the Backend Directory
 cd ~/Project/backend
-
-Check Python:
-
+9.2 Verify Python
 python3 --version
-7.1 Create Python Virtual Environment
+10. Create the Python Virtual Environment
 
-Create the virtual environment:
+A Python virtual environment keeps the application's Python dependencies isolated from the system Python installation.
+
+10.1 Create the Virtual Environment
+
+Run:
 
 python3 -m venv venv
 
-Activate it:
+This creates:
+
+backend/
+└── venv/
+10.2 Activate the Virtual Environment
+
+Run:
 
 source venv/bin/activate
 
-You should see something similar to:
+After activation, your terminal should show something similar to:
 
 (venv)
-
-in your terminal.
-
-8. Install Backend Dependencies
+11. Install Backend Dependencies
 
 Make sure the virtual environment is active:
 
 source venv/bin/activate
 
-Install dependencies:
+Install the dependencies listed in requirements.txt:
 
 pip install -r requirements.txt
 
-The requirements file contains the Python packages required by the Flask application.
+The dependencies include the packages required to run the Flask application and connect to PostgreSQL.
 
-9. Configure Backend Environment Variables
+12. Configure Backend Environment Variables
 
-The repository contains:
+The repository contains a template:
 
 backend/.env.example
 
-Copy it:
+The actual .env file contains environment-specific configuration and should not be committed to Git.
+
+12.1 Create the .env File
+
+From the backend directory:
 
 cp .env.example .env
+12.2 Edit the .env File
 
-Edit the environment file:
+Open the file using Vim:
 
 vim .env
 
-Configure:
+Set the database connection string:
 
 DATABASE_URL=postgresql+psycopg2://media_user:YOUR_DATABASE_PASSWORD@127.0.0.1:5432/media_platform
 
@@ -304,42 +443,55 @@ YOUR_DATABASE_PASSWORD
 
 with the actual PostgreSQL password.
 
-Example:
+For example:
 
-DATABASE_URL=postgresql+psycopg2://media_user:YOUR_DATABASE_PASSWORD@127.0.0.1:5432/media_platform
+DATABASE_URL=postgresql+psycopg2://media_user:MyStrongPassword@127.0.0.1:5432/media_platform
 
-Do not commit the real .env file to Git.
+Save and exit Vim:
 
-The repository ignores .env through .gitignore.
+Esc
+:wq
+Enter
 
-10. Start the Backend
+Security: Never commit the real .env file to GitHub.
 
-From:
+13. Start the Backend
+
+Make sure you are inside:
 
 ~/Project/backend
 
-with the virtual environment activated:
+Make sure the virtual environment is active:
+
+source venv/bin/activate
+
+Start Flask:
 
 python app.py
 
-The Flask application runs on:
+The backend runs on:
 
 http://0.0.0.0:5000
 
 Keep this terminal running.
 
-11. Test the Backend
+14. Test the Backend
 
-Open another terminal.
+Open another terminal while the Flask server continues running.
 
-Test the root endpoint:
+14.1 Test the Backend Health Endpoint
+
+Run:
 
 curl http://127.0.0.1:5000/
 
 Expected response:
 
 Media Platform Backend is running!
-Database Connection Test
+14.2 Test the Database Connection
+
+Run:
+
 curl http://127.0.0.1:5000/api/db-test
 
 Expected response:
@@ -347,57 +499,87 @@ Expected response:
 {
   "database": "connected"
 }
-Movies API
+14.3 Test the Movies API
+
+Run:
+
 curl http://127.0.0.1:5000/api/movies
 
-This should return the movies stored in PostgreSQL.
+The API should return the movies stored in PostgreSQL.
 
-Movie by ID
+14.4 Test a Movie by ID
 
-Example:
+Run:
 
 curl http://127.0.0.1:5000/api/movies/1
-Technology Categories
-curl http://127.0.0.1:5000/api/tech/categories
-Technology News
+14.5 Test Technology Categories
 
-For example, category ID 1:
+Run:
+
+curl http://127.0.0.1:5000/api/tech/categories
+14.6 Test Technology News
+
+For example, to retrieve news for category ID 1:
 
 curl http://127.0.0.1:5000/api/tech/news/1
 
-The category IDs currently correspond to:
+Current category IDs are:
 
-1 → Mobiles
-2 → Cars
-3 → Laptops
-4 → AI
-12. Frontend Setup
+ID	Category
+1	Mobiles
+2	Cars
+3	Laptops
+4	AI
+15. Frontend Setup
 
-Open another terminal.
+The frontend is built using:
 
-Move to the frontend:
+React
+Vite
+React Router
+
+The frontend source code is located in:
+
+frontend/
+15.1 Open Another Terminal
+
+Keep the Flask backend running.
+
+Open another terminal and navigate to the frontend:
 
 cd ~/Project/frontend
+15.2 Verify Node.js
 
-Check Node.js:
+Run:
 
 node --version
 
-Check npm:
+Node.js 22+ is recommended.
+
+15.3 Verify npm
+
+Run:
 
 npm --version
+16. Install Frontend Dependencies
 
-Install frontend dependencies:
+From the frontend directory:
+
+cd ~/Project/frontend
+
+Install the dependencies:
 
 npm install
 
-This creates:
+This creates the:
 
 node_modules/
 
-The node_modules directory is ignored by Git.
+directory.
 
-13. Start the Frontend
+node_modules is generated locally and is not committed to GitHub.
+
+17. Start the Frontend
 
 From:
 
@@ -407,43 +589,55 @@ run:
 
 npm run dev -- --host 0.0.0.0
 
-Vite will start the frontend development server.
+Vite will start the development server.
 
-The application will normally be available on:
+You should see output similar to:
+
+VITE ... ready
+
+Local:   http://localhost:5173/
+Network: http://YOUR_EC2_PRIVATE_IP:5173/
+
+Keep this terminal running.
+
+18. Access the Application
+
+Open your browser and navigate to:
 
 http://YOUR_EC2_PUBLIC_IP:5173
 
-Open that address in a browser.
+For example:
 
-14. Frontend Pages
+http://13.xx.xx.xx:5173
 
-The current application contains:
+The Media Platform home page should appear.
 
-Home
+19. Application Pages
+19.1 Home Page
 
 URL:
 
 /
 
-The home page contains:
+The home page provides:
 
 Media Platform
 
 Movies
 Tech News
-Movies
+19.2 Movies Page
 
 URL:
 
 /movies
 
-The page retrieves movie information from:
+The Movies page retrieves movie information from:
 
 GET /api/movies
 
-Movies are displayed using data retrieved from PostgreSQL through the Flask backend.
+The movie information is stored in PostgreSQL.
 
-Tech News
+19.3 Tech News Page
 
 URL:
 
@@ -453,30 +647,53 @@ The page first retrieves the technology categories:
 
 GET /api/tech/categories
 
-The user can select:
+The available categories are:
 
 Mobiles
 Cars
 Laptops
 AI
 
-After selecting a category, the frontend requests:
+When the user selects a category, the frontend requests:
 
 GET /api/tech/news/<category_id>
 
-and displays the related news.
+The corresponding technology news is then displayed.
 
-15. Backend API Endpoints
-Method	Endpoint	Purpose
+20. Backend API Endpoints
+Method	Endpoint	Description
 GET	/	Backend health message
-GET	/api/db-test	Test database connection
-GET	/api/movies	Get all movies
-GET	/api/movies/<id>	Get movie by ID
-GET	/api/tech/categories	Get technology categories
-GET	/api/tech/news/<category_id>	Get news for a category
-16. Project Structure
+GET	/api/db-test	Test database connectivity
+GET	/api/movies	Retrieve all movies
+GET	/api/movies/<id>	Retrieve a movie by ID
+GET	/api/tech/categories	Retrieve technology categories
+GET	/api/tech/news/<category_id>	Retrieve news for a category
+21. Frontend API Configuration
+
+The frontend API service is located at:
+
+frontend/src/services/api.js
+
+The frontend uses relative API URLs such as:
+
+/api/movies
+/api/tech/categories
+/api/tech/news/<category_id>
+
+Vite forwards these requests to:
+
+http://127.0.0.1:5000
+
+The proxy configuration is located in:
+
+frontend/vite.config.js
+22. Project Structure
+
+The complete project structure is:
+
 Project/
 │
+├── .git/
 ├── .gitignore
 ├── README.md
 │
@@ -519,22 +736,55 @@ Project/
         │
         └── services/
             └── api.js
+23. Git Configuration
+23.1 Check Repository Status
 
-    17. Git and Security
+From the project root:
 
-Never commit sensitive information such as:
+cd ~/Project
+git status
+23.2 Add Changes
+git add .
+23.3 Commit Changes
+git commit -m "Update Media Platform"
+23.4 Push Changes
+git push
+23.5 Pull Latest Changes
+
+When working on another server:
+
+git pull
+24. Security
+
+Do not commit sensitive information to GitHub.
+
+Never commit:
 
 Database passwords
 API keys
 AWS access keys
 SSH private keys
+Authentication tokens
 .env files
-Tokens
-Credentials
+Other credentials
 
-The project uses .gitignore to exclude sensitive and generated files.
+The real environment file:
 
-Important ignored files/directories include:
+backend/.env
+
+is excluded through .gitignore.
+
+The repository contains only:
+
+backend/.env.example
+
+The example file contains a placeholder password rather than the real database password.
+
+25. .gitignore
+
+The project ignores files that should not be committed.
+
+Important ignored files include:
 
 .env
 backend/.env
@@ -544,37 +794,41 @@ node_modules/
 frontend/node_modules/
 dist/
 frontend/dist/
+*.log
+26. AWS EC2 Configuration
 
-The repository contains:
+The application currently runs on one EC2 instance.
 
-backend/.env.example
+AWS EC2
+│
+├── React + Vite
+│   └── Port 5173
+│
+├── Flask Backend
+│   └── Port 5000
+│
+└── PostgreSQL
+    └── Port 5432
+26.1 Required Security Group Port
 
-instead of the real environment configuration.
+For browser access to the frontend, allow:
 
-18. Git Workflow
+Protocol : TCP
+Port     : 5173
+Source   : Your IP address
+26.2 Backend Port
 
-Check the current repository status:
+Port 5000 does not need to be publicly accessible for the current development architecture.
 
-git status
+26.3 PostgreSQL Port
 
-Add changes:
+Port 5432 should not be publicly accessible for this setup.
 
-git add .
+The database is accessed locally by the Flask backend.
 
-Commit:
+27. Running the Application
 
-git commit -m "Update Media Platform"
-
-Push:
-
-git push
-
-Pull the latest version:
-
-git pull
-19. Running the Application on EC2
-
-Three major components are involved.
+The application currently requires the following services.
 
 Terminal 1 - Backend
 cd ~/Project/backend
@@ -588,61 +842,16 @@ PostgreSQL
 PostgreSQL runs as a system service:
 
 sudo systemctl status postgresql
+Browser
 
-The application can then be accessed through:
+Open:
 
 http://YOUR_EC2_PUBLIC_IP:5173
-20. AWS EC2 Security Group
-
-For the current development setup, the frontend port needs to be reachable from the browser.
-
-Allow:
-
-TCP 5173
-
-Recommended source:
-
-Your IP address
-
-Do not publicly expose PostgreSQL unless there is a specific requirement.
-
-PostgreSQL:
-
-5432
-
-should normally remain private.
-
-The Flask backend:
-
-5000
-
-also does not need to be publicly exposed because Vite proxies API requests to the backend locally.
-
-21. Current Deployment Model
-
-The current setup is intentionally simple.
-
-Everything runs on one EC2 instance:
-
-AWS EC2
-│
-├── React + Vite
-│   └── Port 5173
-│
-├── Flask
-│   └── Port 5000
-│
-└── PostgreSQL
-    └── Port 5432
-
-This is useful for development and learning the application architecture before introducing additional infrastructure.
-
-
-22. Current Application Flow
-Movies
+28. Complete Application Flow
+28.1 Movies Flow
 User
  |
- | Open Movies
+ | Opens Movies
  v
 React
  |
@@ -663,10 +872,10 @@ React
  |
  v
 Movie Cards
-Technology News
+28.2 Technology News Flow
 User
  |
- | Open Tech News
+ | Opens Tech News
  v
 React
  |
@@ -678,14 +887,14 @@ Flask
 PostgreSQL
  |
  v
-Categories
+Technology Categories
  |
  v
 React
  |
  | User selects category
  |
- | GET /api/tech/news/<id>
+ | GET /api/tech/news/<category_id>
  v
 Flask
  |
@@ -693,74 +902,83 @@ Flask
 PostgreSQL
  |
  v
-News
+Technology News
  |
  v
 React
  |
  v
 News Cards
-23. Future Application Features
+29. Future Application Features
 
 The next planned application feature is a Wishlist.
 
-Planned functionality:
+The planned functionality is:
 
 Movies
    |
-   | Add movie
+   | Add Movie
    v
 Wishlist
    |
-   | View saved movies
+   | View Saved Movies
    |
-   | Remove movie
+   | Remove Movie
    v
-Database
+PostgreSQL
 
-The Wishlist feature will require:
+The Wishlist feature will include:
 
 Wishlist database table
-Backend API endpoints
-Frontend Wishlist page
 Add-to-wishlist functionality
 Remove-from-wishlist functionality
-Header Wishlist navigation
+Wishlist page
+Wishlist navigation in the header
+Backend APIs
+Database operations
+Frontend integration
 CRUD testing
-24. Future DevOps Improvements
+30. Future DevOps Improvements
 
-After the application features are stable, the project can progressively introduce DevOps practices.
+Once the application features are stable, DevOps practices can be introduced incrementally.
 
-Planned areas include:
-
-Version Control
+30.1 Version Control
 Git
 GitHub
-CI/CD
-Jenkins
+30.2 CI/CD
 GitHub
-Automated Build
-Automated Tests
-Deployment
-Code Quality
+   |
+   v
+Jenkins
+   |
+   +--> Build
+   |
+   +--> Test
+   |
+   +--> SonarQube
+   |
+   +--> Package
+   |
+   +--> Deploy
+30.3 Code Quality
 SonarQube
-Containerization
+30.4 Containerization
 Docker
 Docker Compose
-Infrastructure as Code
+30.5 Infrastructure as Code
 Terraform
-Cloud
+30.6 Cloud
 AWS
 EC2
 S3
 IAM
 VPC
 Security Groups
-Container Orchestration
+30.7 Container Orchestration
 Kubernetes
-25. Future CI/CD Flow
+31. Future CI/CD Architecture
 
-The application can eventually follow a pipeline similar to:
+The eventual deployment flow can be:
 
 Developer
     |
@@ -773,109 +991,106 @@ Jenkins
     +----------------+
     |                |
     v                v
-Build             Tests
+  Build            Tests
     |                |
     +-------+--------+
             |
             v
-        SonarQube
+       SonarQube
             |
             v
-        Docker Build
+       Docker Build
             |
             v
-      Docker Registry
+     Docker Registry
             |
             v
-       AWS Deployment
+      AWS Deployment
             |
             v
-        Application
-26. Development Philosophy
+       Application
+32. Troubleshooting
+32.1 PostgreSQL Is Not Running
 
-The project is intentionally being developed incrementally.
+Check:
 
-Current approach:
-
-Application
-   ↓
-Database
-   ↓
-Backend
-   ↓
-Frontend
-   ↓
-GitHub
-   ↓
-Fresh EC2 Deployment
-   ↓
-Feature Development
-   ↓
-Docker
-   ↓
-CI/CD
-   ↓
-Infrastructure as Code
-   ↓
-Cloud / Kubernetes
-
-The objective is to understand each layer individually before introducing additional DevOps tooling.
-
-
-27. Troubleshooting
-Check PostgreSQL
 sudo systemctl status postgresql
-Check Backend
+
+Start it:
+
+sudo systemctl start postgresql
+32.2 Backend Is Not Responding
+
+Check:
+
 curl http://127.0.0.1:5000/
-Check Database Connection
-curl http://127.0.0.1:5000/api/db-test
-Check Movies API
-curl http://127.0.0.1:5000/api/movies
-Check Frontend
 
-Open:
+If necessary, start the backend:
 
-http://YOUR_EC2_PUBLIC_IP:5173
-Check Node.js
+cd ~/Project/backend
+source venv/bin/activate
+python app.py
+32.3 Database Connection Failed
+
+Test PostgreSQL directly:
+
+psql -h 127.0.0.1 -U media_user -W -d media_platform
+
+If authentication fails, verify:
+
+Database username
+Database password
+Database name
+PostgreSQL service
+pg_hba.conf
+32.4 Frontend Is Not Opening
+
+Check Node.js:
+
 node --version
+
+Check npm:
+
 npm --version
-Check Git
-git status
-28. Important Notes
 
-This project is currently intended for development and learning.
+Install dependencies:
 
-The current configuration uses:
+cd ~/Project/frontend
+npm install
 
-React + Vite
-Flask
-PostgreSQL
-AWS EC2
+Start Vite:
 
-Production deployment should introduce additional considerations such as:
+npm run dev -- --host 0.0.0.0
 
-Production WSGI server
-Reverse proxy
-HTTPS
-Secrets management
-Proper database backups
-Monitoring
-Logging
-CI/CD
-Containerization
-Infrastructure as Code
-Access control
-Network security
-29. Quick Start Summary
+Also verify that EC2 Security Group allows TCP port 5173.
 
-For an already configured EC2 server:
+32.5 Frontend Loads but API Data Does Not Appear
 
-Clone
+First check the backend:
+
+curl http://127.0.0.1:5000/
+
+Then check the database:
+
+curl http://127.0.0.1:5000/api/db-test
+
+Then test the Movies API:
+
+curl http://127.0.0.1:5000/api/movies
+
+If these work, check the frontend Vite proxy configuration:
+
+frontend/vite.config.js
+33. Quick Start
+
+For an already configured server, the basic startup process is:
+
+Step 1 - Clone
 git clone https://github.com/DevOpsCloudZone/Project.git
 cd Project
-Database
+Step 2 - Initialize Database
 psql -h 127.0.0.1 -U media_user -W -d media_platform -f db/init.sql
-Backend
+Step 3 - Start Backend
 cd backend
 python3 -m venv venv
 source venv/bin/activate
@@ -883,39 +1098,87 @@ pip install -r requirements.txt
 cp .env.example .env
 vim .env
 python app.py
-Frontend
+Step 4 - Start Frontend
 
 Open another terminal:
 
 cd ~/Project/frontend
 npm install
 npm run dev -- --host 0.0.0.0
-Application
+Step 5 - Open the Application
 
 Open:
 
 http://YOUR_EC2_PUBLIC_IP:5173
-30. Repository
+34. Repository
 
 GitHub repository:
 
 https://github.com/DevOpsCloudZone/Project
-License
+35. Development Approach
+
+The project is being developed incrementally.
+
+The current development approach is:
+
+Application
+     |
+     v
+PostgreSQL Database
+     |
+     v
+Flask Backend
+     |
+     v
+React Frontend
+     |
+     v
+GitHub
+     |
+     v
+Fresh EC2 Deployment
+     |
+     v
+Feature Development
+     |
+     v
+Docker
+     |
+     v
+CI/CD
+     |
+     v
+Terraform
+     |
+     v
+AWS Infrastructure
+     |
+     v
+Kubernetes
+
+The goal is to understand each layer independently before introducing additional DevOps tooling.
+
+36. License
 
 This project is currently being developed as a personal learning and portfolio project.
 
 
-After saving, **check the file**:
+### After pasting
 
-```bash
+Save:
+
+```text
+Esc
+:wq
+Enter
+
+Then verify:
+
 cd ~/Project
-cat README.md
+head -40 README.md
 
-Then commit and push the complete README:
+Then commit it:
 
-git status
 git add README.md
-git commit -m "Complete project README"
+git commit -m "Improve README documentation"
 git push
-
-That will give your GitHub repository a proper clone → database → backend → frontend → run → API → architecture → troubleshooting → future DevOps setup guide.
